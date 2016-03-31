@@ -4,9 +4,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-@Mod(modid = EnergyWay.MODID, version="alpha")
-public class EnergyWay
-{
+@Mod(modid = EnergyWay.MODID)
+public class EnergyWay {
+
 	public static final String MODID = "energyway";
 
 	@EventHandler
