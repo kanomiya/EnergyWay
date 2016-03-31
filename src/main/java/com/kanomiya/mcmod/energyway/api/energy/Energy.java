@@ -11,7 +11,25 @@ import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 public class Energy {
 	protected static final EnergyType energyTypeVoid = new EnergyType("void").register();
 	protected static final Energy energyVoid = Energy.createEmpty(Energy.energyTypeVoid, 0);
-	public static final SimpleEnergyOwner VOID = new SimpleEnergyOwner(energyVoid);
+	public static final SimpleEnergyOwner VOID = new SimpleEnergyOwner(energyVoid)
+	{
+		@Override
+		public Energy getEnergy(EnergyType energyType)
+		{
+			return energyVoid;
+		}
+	};
+
+	protected static final EnergyType energyTypeInfinity = new EnergyType("infinity").register();
+	protected static final Energy energyInfinity = Energy.createUnlimited(Energy.energyTypeInfinity, Integer.MAX_VALUE);
+	public static final SimpleEnergyOwner INFINITY = new SimpleEnergyOwner(energyInfinity)
+	{
+		@Override
+		public Energy getEnergy(EnergyType energyType)
+		{
+			return energyInfinity;
+		}
+	};
 
 
 	/**
@@ -184,6 +202,8 @@ public class Energy {
 	 * @return 不足
 	 */
 	protected int release(int amount) {
+		if (energyType == energyTypeInfinity) return 0;
+
 		amount = Math.max(0, amount);
 
 		int shortage = Math.max(0, amount -this.amount);

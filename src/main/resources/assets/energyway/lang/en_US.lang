@@ -1,0 +1,5 @@
+###--- English ---###
+
+energyway.command.miss=Errored at executing command
+energyway.command.energyway.usage=EnergyWay Command
+kkmagic.commands.kmagic.accept=Given Energy %3$s %2$s to %1$s

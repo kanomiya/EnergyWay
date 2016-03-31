@@ -30,7 +30,10 @@ public class EnergyWayAPI {
 		return idToEnergyType.get(id);
 	}
 
-
+	public static Map<String, EnergyType> energyTypeMap()
+	{
+		return idToEnergyType;
+	}
 
 	public static EntityPropertiesEnergy getProperties(Entity entity)
 	{
