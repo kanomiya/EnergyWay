@@ -48,6 +48,24 @@ public interface IHasEnergy {
 	 */
 	Map<EnergyType, Energy> energyMap();
 
+	default boolean hasCustomData()
+	{
+		NBTTagCompound customData = getCustomData();
+		return customData != null && ! customData.hasNoTags();
+	}
+
+	/**
+	 *
+	 * @return カスタムデータ
+	 */
+	NBTTagCompound getCustomData();
+
+	/**
+	 *
+	 * @param customData カスタムデータ
+	 */
+	void setCustomData(NBTTagCompound customData);
+
 	/**
 	 *
 	 * 外部からエネルギーを受容させる
@@ -93,6 +111,8 @@ public interface IHasEnergy {
 			compound.setTag(energy.getEnergyType().getId(), energy.serializeNBT());
 		}
 
+		if (hasCustomData()) compound.setTag("customData", getCustomData());
+
 		return compound;
 	}
 
@@ -116,6 +136,7 @@ public interface IHasEnergy {
 			}
 		}
 
+		if (compound.hasKey("customData")) setCustomData(compound.getCompoundTag("customData"));
 	}
 
 }

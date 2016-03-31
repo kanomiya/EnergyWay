@@ -22,6 +22,7 @@ public class EntityPropertiesEnergy implements IExtendedEntityProperties, IHasEn
 
 	protected Entity entity;
 	protected Map<EnergyType, Energy> energyMap;
+	protected NBTTagCompound customData;
 
 	public EntityPropertiesEnergy(Entity entity)
 	{
@@ -63,6 +64,24 @@ public class EntityPropertiesEnergy implements IExtendedEntityProperties, IHasEn
 	public void loadNBTData(NBTTagCompound compound)
 	{
 		deserializeEnergyOwnerNBT(compound.getCompoundTag("energy"));
+	}
+
+	/**
+	* @inheritDoc
+	*/
+	@Override
+	public NBTTagCompound getCustomData()
+	{
+		return customData;
+	}
+
+	/**
+	* @inheritDoc
+	*/
+	@Override
+	public void setCustomData(NBTTagCompound customData)
+	{
+		this.customData = customData;
 	}
 
 
