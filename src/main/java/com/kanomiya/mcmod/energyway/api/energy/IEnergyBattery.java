@@ -17,6 +17,16 @@ public interface IEnergyBattery extends IHasEnergy {
 	 */
 	int getCapacity();
 
+	default boolean isFull()
+	{
+		return getAmount() == getCapacity();
+	}
+
+	default int getRest()
+	{
+		return getCapacity() -getAmount();
+	}
+
 
 	/**
 	 *
