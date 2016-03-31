@@ -1,7 +1,12 @@
 package com.kanomiya.mcmod.energyway.api.energy;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 import com.kanomiya.mcmod.energyway.api.event.EnergyAcceptedEvent;
 
 
@@ -23,7 +28,25 @@ public interface IHasEnergy {
 	 * @param energyType エネルギータイプ
 	 * @return
 	 */
-	Energy getEnergy(EnergyType energyType);
+	default Energy getEnergy(EnergyType energyType)
+	{
+		return energyMap().get(energyType);
+	}
+
+	default void setEnergy(Energy energy)
+	{
+		energyMap().put(energy.getEnergyType(), energy);
+	}
+
+	default void removeEnergy(EnergyType energyType)
+	{
+		energyMap().remove(energyType);
+	}
+
+	/**
+	 * @return エネルギーのマップ
+	 */
+	Map<EnergyType, Energy> energyMap();
 
 	/**
 	 *
@@ -55,5 +78,44 @@ public interface IHasEnergy {
 	 * @param donor エネルギー供与者
 	 */
 	default void onEnergyAccepted(EnergyType energyType, int expectedAmount, int actualAmount, IHasEnergy donor) {  }
+
+	default void onUpdate() {  }
+
+
+	default NBTTagCompound serializeEnergyOwnerNBT()
+	{
+		NBTTagCompound compound = new NBTTagCompound();
+		Iterator<Energy> energyItr = energyMap().values().iterator();
+
+		while (energyItr.hasNext())
+		{
+			Energy energy = energyItr.next();
+			compound.setTag(energy.getEnergyType().getId(), energy.serializeNBT());
+		}
+
+		return compound;
+	}
+
+	default void deserializeEnergyOwnerNBT(NBTTagCompound compound)
+	{
+		Iterator<String> idItr = compound.getKeySet().iterator();
+		Map<EnergyType, Energy> energyMap = energyMap();
+
+		while (idItr.hasNext())
+		{
+			String id = idItr.next();
+			EnergyType energyType = EnergyWayAPI.getEnergyTypeById(id);
+			NBTTagCompound eachTag = compound.getCompoundTag(id);
+
+			if (energyMap.containsKey(energyType))
+			{
+				energyMap.get(energyType).deserializeNBT(eachTag);;
+			} else
+			{
+				energyMap.put(energyType, Energy.createFromNBT(eachTag));
+			}
+		}
+
+	}
 
 }

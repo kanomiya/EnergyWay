@@ -9,6 +9,10 @@ import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
  *
  */
 public class Energy {
+	protected static final EnergyType energyTypeVoid = new EnergyType("void").register();
+	protected static final Energy energyVoid = Energy.createEmpty(Energy.energyTypeVoid, 0);
+	public static final SimpleEnergyOwner VOID = new SimpleEnergyOwner(energyVoid);
+
 
 	/**
 	 *
@@ -68,6 +72,7 @@ public class Energy {
 		energy.deserializeNBT(nbt);
 		return energy;
 	}
+
 
 	protected EnergyType energyType;
 	protected int capacity;
@@ -162,6 +167,8 @@ public class Energy {
 	 * @return 余り
 	 */
 	protected int accept(int amount) {
+		if (energyType == Energy.energyTypeVoid) return 0;
+
 		amount = Math.max(0, amount);
 
 		int rest = Math.max(0, this.amount +amount -capacity);
@@ -188,13 +195,13 @@ public class Energy {
 	 *
 	 * NBTから復元する
 	 *
-	 * @param nbt 読み込み元のNBT
+	 * @param compound 読み込み元のNBT
 	 */
-	public void deserializeNBT(NBTTagCompound nbt)
+	public void deserializeNBT(NBTTagCompound compound)
 	{
-		energyType = EnergyWayAPI.getEnergyTypeById(nbt.getString("id")); // TODO UNKNOWN
-		capacity = nbt.getInteger("capacity");
-		amount = nbt.getInteger("amount");
+		energyType = EnergyWayAPI.getEnergyTypeById(compound.getString("id")); // TODO UNKNOWN
+		capacity = compound.getInteger("capacity");
+		amount = compound.getInteger("amount");
 	}
 
 	/**
@@ -205,13 +212,13 @@ public class Energy {
 	 */
 	public NBTTagCompound serializeNBT()
 	{
-		NBTTagCompound nbt = new NBTTagCompound();
+		NBTTagCompound compound = new NBTTagCompound();
 
-		nbt.setString("id", energyType.getId());
-		nbt.setInteger("capacity", capacity);
-		nbt.setInteger("amount", amount);
+		compound.setString("id", energyType.getId());
+		compound.setInteger("capacity", capacity);
+		compound.setInteger("amount", amount);
 
-		return nbt;
+		return compound;
 	}
 
 

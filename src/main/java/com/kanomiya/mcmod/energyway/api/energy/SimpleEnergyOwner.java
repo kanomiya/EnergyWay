@@ -1,8 +1,9 @@
 package com.kanomiya.mcmod.energyway.api.energy;
 
-import com.kanomiya.mcmod.energyway.api.energy.Energy;
-import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
-import com.kanomiya.mcmod.energyway.api.energy.IHasEnergy;
+import java.util.Arrays;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author Kanomiya
@@ -10,11 +11,12 @@ import com.kanomiya.mcmod.energyway.api.energy.IHasEnergy;
  */
 public class SimpleEnergyOwner implements IHasEnergy {
 
-	protected Energy energy;
+	protected Map<EnergyType, Energy> energyMap;
 
-	public SimpleEnergyOwner(Energy energy)
+	public SimpleEnergyOwner(Energy... energy)
 	{
-		this.energy = energy;
+		energyMap = Maps.newHashMap();
+		Arrays.asList(energy).forEach(e -> energyMap.put(e.energyType, e));
 	}
 
 	/**
@@ -23,8 +25,16 @@ public class SimpleEnergyOwner implements IHasEnergy {
 	@Override
 	public Energy getEnergy(EnergyType energyType)
 	{
-		if (energyType != energy.getEnergyType()) return null;
-		return energy;
+		return energyMap.get(energyType);
+	}
+
+	/**
+	* @inheritDoc
+	*/
+	@Override
+	public Map<EnergyType, Energy> energyMap()
+	{
+		return energyMap;
 	}
 
 
