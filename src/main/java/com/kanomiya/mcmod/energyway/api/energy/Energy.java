@@ -8,7 +8,7 @@ import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
  * @author Kanomiya
  *
  */
-public class EnergyBundle implements IEnergy {
+public class Energy {
 
 	/**
 	 *
@@ -17,9 +17,9 @@ public class EnergyBundle implements IEnergy {
 	 * @param energyType エネルギータイプ
 	 * @return 空で無限の容量を持つエネルギー塊
 	 */
-	public static EnergyBundle createUnlimitedEmpty(EnergyType energyType)
+	public static Energy createUnlimitedEmpty(EnergyType energyType)
 	{
-		return new EnergyBundle(energyType, Integer.MAX_VALUE, 0);
+		return new Energy(energyType, Integer.MAX_VALUE, 0);
 	}
 
 	/**
@@ -30,9 +30,9 @@ public class EnergyBundle implements IEnergy {
 	 * @param amount 初期エネルギー量
 	 * @return 空で無限の容量を持つエネルギー塊
 	 */
-	public static EnergyBundle createUnlimited(EnergyType energyType, int amount)
+	public static Energy createUnlimited(EnergyType energyType, int amount)
 	{
-		return new EnergyBundle(energyType, Integer.MAX_VALUE, amount);
+		return new Energy(energyType, Integer.MAX_VALUE, amount);
 	}
 
 	/**
@@ -43,9 +43,9 @@ public class EnergyBundle implements IEnergy {
 	 * @param capacity 容量
 	 * @return 空のエネルギー塊
 	 */
-	public static EnergyBundle createEmpty(EnergyType energyType, int capacity)
+	public static Energy createEmpty(EnergyType energyType, int capacity)
 	{
-		return new EnergyBundle(energyType, capacity, 0);
+		return new Energy(energyType, capacity, 0);
 	}
 
 	/**
@@ -57,14 +57,14 @@ public class EnergyBundle implements IEnergy {
 	 * @param amount 初期エネルギー量
 	 * @return エネルギー塊
 	 */
-	public static EnergyBundle create(EnergyType energyType, int capacity, int amount)
+	public static Energy create(EnergyType energyType, int capacity, int amount)
 	{
-		return new EnergyBundle(energyType, capacity, amount);
+		return new Energy(energyType, capacity, amount);
 	}
 
-	public static EnergyBundle createFromNBT(NBTTagCompound nbt)
+	public static Energy createFromNBT(NBTTagCompound nbt)
 	{
-		EnergyBundle energy = new EnergyBundle();
+		Energy energy = new Energy();
 		energy.readFromNBT(nbt);
 		return energy;
 	}
@@ -73,7 +73,7 @@ public class EnergyBundle implements IEnergy {
 	protected int capacity;
 	protected int amount;
 
-	private EnergyBundle() {  }
+	private Energy() {  }
 
 	/**
 	 *
@@ -81,7 +81,7 @@ public class EnergyBundle implements IEnergy {
 	 * @param capacity 容量
 	 * @param amount 初期量
 	 */
-	protected EnergyBundle(EnergyType energyType, int capacity, int amount)
+	protected Energy(EnergyType energyType, int capacity, int amount)
 	{
 		this.energyType = energyType;
 		this.capacity = Math.max(0, capacity);
@@ -90,9 +90,8 @@ public class EnergyBundle implements IEnergy {
 
 	/**
 	 *
-	 * @inheritDoc
+	 * @return エネルギータイプ
 	 */
-	@Override
 	public EnergyType getEnergyType()
 	{
 		return energyType;
@@ -100,9 +99,8 @@ public class EnergyBundle implements IEnergy {
 
 	/**
 	 *
-	 * @inheritDoc
+	 * @return エネルギー容量
 	 */
-	@Override
 	public int getCapacity()
 	{
 		return capacity;
@@ -110,19 +108,60 @@ public class EnergyBundle implements IEnergy {
 
 	/**
 	 *
-	 * @inheritDoc
+	 * @return エネルギー量
 	 */
-	@Override
 	public int getAmount()
 	{
 		return amount;
 	}
 
+
 	/**
-	* @inheritDoc
-	*/
-	@Override
-	public int accept(int amount) {
+	 *
+	 * @return エネルギーが満タンがどうか
+	 */
+	public boolean isFull()
+	{
+		return getAmount() == getCapacity();
+	}
+
+	/**
+	 *
+	 * @return エネルギー容量と現在エネルギー量の差分
+	 */
+	public int getRest()
+	{
+		return getCapacity() -getAmount();
+	}
+
+
+	/**
+	 *
+	 * 外部からエネルギーを受容させる
+	 *
+	 * @param donor 供与者
+	 * @param amount 受容エネルギー量
+	 * @return 実際に受容したエネルギー量
+	 */
+	public int accept(Energy donor, int amount)
+	{
+		int actualAmount = Math.min(amount, donor.getAmount());
+
+		donor.release(actualAmount);
+		int rest = accept(actualAmount);
+		donor.accept(rest);
+
+		return actualAmount;
+	}
+
+	/**
+	 *
+	 * 外部からエネルギーを受容させる
+	 *
+	 * @param amount 受容エネルギー量
+	 * @return 余り
+	 */
+	protected int accept(int amount) {
 		amount = Math.max(0, amount);
 
 		int rest = Math.max(0, this.amount +amount -capacity);
@@ -131,10 +170,13 @@ public class EnergyBundle implements IEnergy {
 	}
 
 	/**
-	* @inheritDoc
-	*/
-	@Override
-	public int release(int amount) {
+	 *
+	 * 外部へエネルギーを排出させる
+	 *
+	 * @param amount 排出エネルギー量
+	 * @return 不足
+	 */
+	protected int release(int amount) {
 		amount = Math.max(0, amount);
 
 		int shortage = Math.max(0, amount -this.amount);
@@ -143,9 +185,11 @@ public class EnergyBundle implements IEnergy {
 	}
 
 	/**
-	* @inheritDoc
-	*/
-	@Override
+	 *
+	 * NBTから復元する
+	 *
+	 * @param nbt 読み込み元のNBT
+	 */
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		energyType = EnergyWayAPI.getEnergyTypeById(nbt.getString("id")); // TODO UNKNOWN
@@ -154,9 +198,11 @@ public class EnergyBundle implements IEnergy {
 	}
 
 	/**
-	* @inheritDoc
-	*/
-	@Override
+	 *
+	 * NBTへ複製する
+	 *
+	 * @return nbt 書き込み済みのNBT
+	 */
 	public NBTTagCompound writeToNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
