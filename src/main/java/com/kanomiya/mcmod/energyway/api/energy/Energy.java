@@ -65,7 +65,7 @@ public class Energy {
 	public static Energy createFromNBT(NBTTagCompound nbt)
 	{
 		Energy energy = new Energy();
-		energy.readFromNBT(nbt);
+		energy.deserializeNBT(nbt);
 		return energy;
 	}
 
@@ -190,7 +190,7 @@ public class Energy {
 	 *
 	 * @param nbt 読み込み元のNBT
 	 */
-	public void readFromNBT(NBTTagCompound nbt)
+	public void deserializeNBT(NBTTagCompound nbt)
 	{
 		energyType = EnergyWayAPI.getEnergyTypeById(nbt.getString("id")); // TODO UNKNOWN
 		capacity = nbt.getInteger("capacity");
@@ -203,7 +203,7 @@ public class Energy {
 	 *
 	 * @return nbt 書き込み済みのNBT
 	 */
-	public NBTTagCompound writeToNBT()
+	public NBTTagCompound serializeNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 
