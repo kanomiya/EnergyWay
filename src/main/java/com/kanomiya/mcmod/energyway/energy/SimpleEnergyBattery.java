@@ -77,7 +77,7 @@ public class SimpleEnergyBattery implements IEnergyBattery {
 	public int accept(int amount) {
 		amount = Math.max(0, amount);
 
-		int rest = this.amount +amount -capacity;
+		int rest = Math.max(0, this.amount +amount -capacity);
 		this.amount += amount -rest;
 		return rest;
 	}
@@ -89,7 +89,7 @@ public class SimpleEnergyBattery implements IEnergyBattery {
 	public int release(int amount) {
 		amount = Math.max(0, amount);
 
-		int shortage = amount -this.amount;
+		int shortage = Math.max(0, amount -this.amount);
 		this.amount -= amount -shortage;
 		return shortage;
 	}
