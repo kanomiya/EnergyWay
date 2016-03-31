@@ -1,0 +1,11 @@
+[
+{
+  "modid": "energyway",
+  "name": "Energy Way",
+  "description": "Add Energy Concept",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "authorList": ["Kanomiya"]
+}
+]
