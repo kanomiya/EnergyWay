@@ -15,7 +15,6 @@ public class EnergyWayAPI {
 
 	public static final String ID_DATA = "energyway";
 
-
 	public static void registerEnergyType(EnergyType energyType)
 	{
 		idToEnergyType.put(energyType.getId(), energyType);

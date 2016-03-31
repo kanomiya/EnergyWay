@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.MinecraftForge;
 
-import com.google.common.collect.Maps;
+import com.kanomiya.mcmod.energyway.api.EnergyOwnerInitRegistry;
 import com.kanomiya.mcmod.energyway.api.energy.Energy;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
 import com.kanomiya.mcmod.energyway.api.energy.IHasEnergy;
@@ -34,7 +34,7 @@ public class EntityPropertiesEnergy implements IExtendedEntityProperties, IHasEn
 	@Override
 	public void init(Entity entity, World world)
 	{
-		energyMap = Maps.newHashMap();
+		energyMap = EnergyOwnerInitRegistry.INSTANCE.getEntityPropTemplete(entity.getClass());
 
 		MinecraftForge.EVENT_BUS.post(new EnergyOwnerInitEvent(this));
 	}

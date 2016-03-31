@@ -221,6 +221,14 @@ public class Energy {
 		return compound;
 	}
 
+	/**
+	 *
+	 * @return 複製
+	 */
+	public Energy copy()
+	{
+		return new Energy(energyType, capacity, amount);
+	}
 
 
 }
