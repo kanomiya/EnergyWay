@@ -2,6 +2,7 @@ package com.kanomiya.mcmod.energyway.api;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import net.minecraft.entity.Entity;
 import scala.actors.threadpool.Arrays;
@@ -39,8 +40,20 @@ public class EnergyOwnerInitRegistry {
 
 	public Map<EnergyType, Energy> getEntityPropTemplete(Class<? extends Entity> clazz)
 	{
-		if (! entityPropTempletes.containsKey(clazz)) return Maps.newHashMap();
-		return entityPropTempletes.get(clazz);
+		Map<EnergyType, Energy> map = Maps.newHashMap();
+
+		entityPropTempletes.keySet().forEach(new Consumer<Class<? extends Entity>>()
+		{
+			@Override
+			public void accept(Class<? extends Entity> key) {
+				if (key.isAssignableFrom(clazz))
+				{
+					entityPropTempletes.get(key).forEach((EnergyType t, Energy e) -> map.put(t, e));;
+				}
+			}
+		});
+
+		return map;
 	}
 
 }
