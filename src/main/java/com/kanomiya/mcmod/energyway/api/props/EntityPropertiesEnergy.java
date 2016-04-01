@@ -9,6 +9,7 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.kanomiya.mcmod.energyway.api.EnergyOwnerInitRegistry;
+import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 import com.kanomiya.mcmod.energyway.api.energy.Energy;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
 import com.kanomiya.mcmod.energyway.api.energy.IHasEnergy;
@@ -54,7 +55,7 @@ public class EntityPropertiesEnergy implements IExtendedEntityProperties, IHasEn
 	@Override
 	public void saveNBTData(NBTTagCompound compound)
 	{
-		compound.setTag("energy", serializeEnergyOwnerNBT());
+		compound.setTag(EnergyWayAPI.ID_DATA, serializeEnergyOwnerNBT());
 	}
 
 	/**
@@ -63,7 +64,7 @@ public class EntityPropertiesEnergy implements IExtendedEntityProperties, IHasEn
 	@Override
 	public void loadNBTData(NBTTagCompound compound)
 	{
-		deserializeEnergyOwnerNBT(compound.getCompoundTag("energy"));
+		deserializeEnergyOwnerNBT(compound.getCompoundTag(EnergyWayAPI.ID_DATA));
 	}
 
 	/**
