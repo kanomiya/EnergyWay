@@ -1,6 +1,6 @@
 package com.kanomiya.mcmod.energyway;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import org.apache.logging.log4j.Logger;
 
+import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
 import com.kanomiya.mcmod.energyway.command.CommandEnergyWay;
-import com.kanomiya.mcmod.energyway.event.EventHandlerEntityInit;
 
 @Mod(modid = EnergyWay.MODID)
 public class EnergyWay {
@@ -23,7 +23,7 @@ public class EnergyWay {
 	{
 		logger = event.getModLog();
 
-		MinecraftForge.EVENT_BUS.register(EventHandlerEntityInit.INSTANCE);
+		CapabilityManager.INSTANCE.register(EnergyProvider.class, new EnergyProvider.Storage(), EnergyProvider::new);
 	}
 
 	@EventHandler

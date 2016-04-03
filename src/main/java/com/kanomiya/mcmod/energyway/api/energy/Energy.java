@@ -1,6 +1,7 @@
 package com.kanomiya.mcmod.energyway.api.energy;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 
@@ -8,10 +9,10 @@ import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
  * @author Kanomiya
  *
  */
-public class Energy {
+public class Energy implements INBTSerializable<NBTTagCompound> {
 	protected static final EnergyType energyTypeVoid = new EnergyType("void").register();
 	protected static final Energy energyVoid = Energy.createEmpty(Energy.energyTypeVoid, 0);
-	public static final SimpleEnergyOwner VOID = new SimpleEnergyOwner(energyVoid)
+	public static final EnergyProvider VOID = new EnergyProvider(energyVoid)
 	{
 		@Override
 		public Energy getEnergy(EnergyType energyType)
@@ -22,7 +23,7 @@ public class Energy {
 
 	protected static final EnergyType energyTypeInfinity = new EnergyType("infinity").register();
 	protected static final Energy energyInfinity = Energy.createUnlimited(Energy.energyTypeInfinity, Integer.MAX_VALUE);
-	public static final SimpleEnergyOwner INFINITY = new SimpleEnergyOwner(energyInfinity)
+	public static final EnergyProvider INFINITY = new EnergyProvider(energyInfinity)
 	{
 		@Override
 		public Energy getEnergy(EnergyType energyType)
@@ -217,6 +218,7 @@ public class Energy {
 	 *
 	 * @param compound 読み込み元のNBT
 	 */
+	@Override
 	public void deserializeNBT(NBTTagCompound compound)
 	{
 		energyType = EnergyWayAPI.getEnergyTypeById(compound.getString("id")); // TODO UNKNOWN
@@ -230,6 +232,7 @@ public class Energy {
 	 *
 	 * @return nbt 書き込み済みのNBT
 	 */
+	@Override
 	public NBTTagCompound serializeNBT()
 	{
 		NBTTagCompound compound = new NBTTagCompound();

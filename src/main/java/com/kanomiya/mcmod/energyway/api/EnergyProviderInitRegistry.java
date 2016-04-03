@@ -15,10 +15,10 @@ import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
  * @author Kanomiya
  *
  */
-public class EnergyOwnerInitRegistry {
+public class EnergyProviderInitRegistry {
 
-	public static final EnergyOwnerInitRegistry INSTANCE = new EnergyOwnerInitRegistry();
-	protected EnergyOwnerInitRegistry() {  }
+	public static final EnergyProviderInitRegistry INSTANCE = new EnergyProviderInitRegistry();
+	protected EnergyProviderInitRegistry() {  }
 
 
 	protected Map<Class<? extends Entity>, Map<EnergyType, Energy>> entityPropTempletes = Maps.newHashMap();

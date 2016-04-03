@@ -7,6 +7,6 @@ package com.kanomiya.mcmod.energyway.api.event;
  * @author Kanomiya
  *
  */
-public interface IEventEnergy {
+public interface IEnergyEvent {
 
 }

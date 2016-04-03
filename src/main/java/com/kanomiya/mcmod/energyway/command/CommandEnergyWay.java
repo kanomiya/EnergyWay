@@ -12,8 +12,8 @@ import net.minecraft.util.ChatComponentTranslation;
 
 import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 import com.kanomiya.mcmod.energyway.api.energy.Energy;
+import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
-import com.kanomiya.mcmod.energyway.api.props.EntityPropertiesEnergy;
 
 /**
  * @author Kanomiya
@@ -53,9 +53,9 @@ public class CommandEnergyWay extends CommandBase {
 		boolean success = false;
 
 		Entity entity = sender.getCommandSenderEntity();
-		EntityPropertiesEnergy props = EnergyWayAPI.getProperties(entity);
+		EnergyProvider provider = entity.getCapability(EnergyWayAPI.capabilityEnergy, null);
 
-		if (props != null) {
+		if (provider != null) {
 
 			if (argLength == 3 && args[0].equals("accept") && args[2].matches("-*[0-9]+")) {
 				int amount = Integer.valueOf(args[2]);
@@ -63,7 +63,7 @@ public class CommandEnergyWay extends CommandBase {
 
 				if (energyType != null)
 				{
-					props.accept(Energy.INFINITY, energyType, amount);
+					provider.accept(Energy.INFINITY, energyType, amount);
 
 					sender.addChatMessage(new ChatComponentTranslation("energyway.command.energyway.accept",
 							sender.getDisplayName(),

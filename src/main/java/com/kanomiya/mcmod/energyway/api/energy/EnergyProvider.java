@@ -1,11 +1,17 @@
 package com.kanomiya.mcmod.energyway.api.energy;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import com.google.common.collect.Maps;
 import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 import com.kanomiya.mcmod.energyway.api.event.EnergyAcceptedEvent;
 
@@ -14,9 +20,35 @@ import com.kanomiya.mcmod.energyway.api.event.EnergyAcceptedEvent;
  * @author Kanomiya
  *
  */
-public interface IHasEnergy {
+public class EnergyProvider implements INBTSerializable<NBTTagCompound> {
 
-	default boolean hasEnergy(EnergyType energyType)
+	public static EnergyProvider fromNBT(NBTTagCompound nbt)
+	{
+		EnergyProvider provider = new EnergyProvider();
+		provider.deserializeNBT(nbt);
+		return provider;
+	}
+
+	protected Map<EnergyType, Energy> energyMap;
+	protected NBTTagCompound customData;
+
+
+	public EnergyProvider()
+	{
+		energyMap = Maps.newHashMap();
+	}
+
+	public EnergyProvider(Energy... defaultz)
+	{
+		this();
+
+		Arrays.asList(defaultz).forEach(this::setEnergy);
+	}
+
+
+
+
+	public boolean hasEnergy(EnergyType energyType)
 	{
 		return getEnergy(energyType) != null;
 	}
@@ -28,17 +60,17 @@ public interface IHasEnergy {
 	 * @param energyType エネルギータイプ
 	 * @return
 	 */
-	default Energy getEnergy(EnergyType energyType)
+	public Energy getEnergy(EnergyType energyType)
 	{
 		return energyMap().get(energyType);
 	}
 
-	default void setEnergy(Energy energy)
+	public void setEnergy(Energy energy)
 	{
 		energyMap().put(energy.getEnergyType(), energy);
 	}
 
-	default void removeEnergy(EnergyType energyType)
+	public void removeEnergy(EnergyType energyType)
 	{
 		energyMap().remove(energyType);
 	}
@@ -46,9 +78,12 @@ public interface IHasEnergy {
 	/**
 	 * @return エネルギーのマップ
 	 */
-	Map<EnergyType, Energy> energyMap();
+	public Map<EnergyType, Energy> energyMap()
+	{
+		return energyMap;
+	}
 
-	default boolean hasCustomData()
+	public boolean hasCustomData()
 	{
 		NBTTagCompound customData = getCustomData();
 		return customData != null && ! customData.hasNoTags();
@@ -58,13 +93,19 @@ public interface IHasEnergy {
 	 *
 	 * @return カスタムデータ
 	 */
-	NBTTagCompound getCustomData();
+	public NBTTagCompound getCustomData()
+	{
+		return customData;
+	}
 
 	/**
 	 *
 	 * @param customData カスタムデータ
 	 */
-	void setCustomData(NBTTagCompound customData);
+	public void setCustomData(NBTTagCompound customData)
+	{
+		this.customData = customData;
+	}
 
 	/**
 	 *
@@ -74,7 +115,7 @@ public interface IHasEnergy {
 	 * @param energyType エネルギータイプ
 	 * @param amount 受容エネルギー量
 	 */
-	default void accept(IHasEnergy donor, EnergyType energyType, int amount)
+	public void accept(EnergyProvider donor, EnergyType energyType, int amount)
 	{
 		if (! hasEnergy(energyType)) return;
 
@@ -95,12 +136,11 @@ public interface IHasEnergy {
 	 * @param actualAmount 実際のエネルギー移動量
 	 * @param donor エネルギー供与者
 	 */
-	default void onEnergyAccepted(EnergyType energyType, int expectedAmount, int actualAmount, IHasEnergy donor) {  }
-
-	default void onUpdate() {  }
+	public void onEnergyAccepted(EnergyType energyType, int expectedAmount, int actualAmount, EnergyProvider donor) {  }
 
 
-	default NBTTagCompound serializeEnergyOwnerNBT()
+	@Override
+	public NBTTagCompound serializeNBT()
 	{
 		NBTTagCompound compound = new NBTTagCompound();
 		Iterator<Energy> energyItr = energyMap().values().iterator();
@@ -116,7 +156,8 @@ public interface IHasEnergy {
 		return compound;
 	}
 
-	default void deserializeEnergyOwnerNBT(NBTTagCompound compound)
+	@Override
+	public void deserializeNBT(NBTTagCompound compound)
 	{
 		Iterator<String> idItr = compound.getKeySet().iterator();
 		Map<EnergyType, Energy> energyMap = energyMap();
@@ -125,6 +166,8 @@ public interface IHasEnergy {
 		{
 			String id = idItr.next();
 			EnergyType energyType = EnergyWayAPI.getEnergyTypeById(id);
+			if (energyType == null) continue;
+
 			NBTTagCompound eachTag = compound.getCompoundTag(id);
 
 			if (energyMap.containsKey(energyType))
@@ -137,6 +180,37 @@ public interface IHasEnergy {
 		}
 
 		if (compound.hasKey("customData")) setCustomData(compound.getCompoundTag("customData"));
+	}
+
+
+
+
+	/**
+	 *
+	 * In charge of EnergyProvider's Reader/Writer ??
+	 *
+	 * @author Kanomiya
+	 *
+	 */
+	public static class Storage implements Capability.IStorage<EnergyProvider>
+	{
+		/**
+		* @inheritDoc
+		*/
+		@Override
+		public NBTBase writeNBT(Capability<EnergyProvider> capability, EnergyProvider instance, EnumFacing side)
+		{
+			return instance.serializeNBT();
+		}
+
+		/**
+		* @inheritDoc
+		*/
+		@Override
+		public void readNBT(Capability<EnergyProvider> capability, EnergyProvider instance, EnumFacing side, NBTBase nbt)
+		{
+			if (nbt instanceof NBTTagCompound) instance.deserializeNBT((NBTTagCompound) nbt);
+		}
 	}
 
 }

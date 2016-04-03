@@ -2,12 +2,12 @@ package com.kanomiya.mcmod.energyway.api;
 
 import java.util.Map;
 
-import net.minecraft.entity.Entity;
-import net.minecraftforge.common.IExtendedEntityProperties;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
 import com.google.common.collect.Maps;
+import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
-import com.kanomiya.mcmod.energyway.api.props.EntityPropertiesEnergy;
 
 /**
  * @author Kanomiya
@@ -18,6 +18,9 @@ public class EnergyWayAPI {
 	protected static final Map<String, EnergyType> idToEnergyType = Maps.newHashMap();
 
 	public static final String ID_DATA = "energyway";
+
+	@CapabilityInject(value = EnergyProvider.class)
+	public static final Capability<EnergyProvider> capabilityEnergy = null;
 
 	public static void registerEnergyType(EnergyType energyType)
 	{
@@ -35,11 +38,6 @@ public class EnergyWayAPI {
 		return idToEnergyType;
 	}
 
-	public static EntityPropertiesEnergy getProperties(Entity entity)
-	{
-		IExtendedEntityProperties props = entity.getExtendedProperties(EnergyWayAPI.ID_DATA);
-		if (props instanceof EntityPropertiesEnergy) return (EntityPropertiesEnergy) props;
-		return null;
-	}
+
 
 }

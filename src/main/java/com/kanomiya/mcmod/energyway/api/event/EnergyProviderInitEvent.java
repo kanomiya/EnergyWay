@@ -2,7 +2,7 @@ package com.kanomiya.mcmod.energyway.api.event;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
-import com.kanomiya.mcmod.energyway.api.energy.IHasEnergy;
+import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
 
 /**
  *
@@ -11,20 +11,20 @@ import com.kanomiya.mcmod.energyway.api.energy.IHasEnergy;
  * @author Kanomiya
  *
  */
-public class EnergyOwnerInitEvent extends Event implements IEventEnergy {
+public class EnergyProviderInitEvent extends Event implements IEnergyEvent {
 
-	protected IHasEnergy owner;
+	protected EnergyProvider owner;
 
 	/**
 	 *
 	 * @param owner 初期化するエネルギー所有者
 	 */
-	public EnergyOwnerInitEvent(IHasEnergy owner)
+	public EnergyProviderInitEvent(EnergyProvider owner)
 	{
 		this.owner = owner;
 	}
 
-	public IHasEnergy getOwner()
+	public EnergyProvider getOwner()
 	{
 		return owner;
 	}
