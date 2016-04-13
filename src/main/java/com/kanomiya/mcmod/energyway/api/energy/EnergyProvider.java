@@ -10,6 +10,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import com.google.common.collect.Maps;
@@ -21,7 +22,7 @@ import com.kanomiya.mcmod.energyway.api.event.EnergyAcceptedEvent;
  * @author Kanomiya
  *
  */
-public class EnergyProvider implements INBTSerializable<NBTTagCompound>
+public class EnergyProvider implements ICapabilityProvider, INBTSerializable<NBTTagCompound>
 {
 	public static EnergyProvider fromNBT(NBTTagCompound nbt)
 	{
@@ -188,6 +189,25 @@ public class EnergyProvider implements INBTSerializable<NBTTagCompound>
 	}
 
 
+	/**
+	* @inheritDoc
+	*/
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+	{
+		return capability == EnergyWayAPI.capEnergy;
+	}
+
+	/**
+	* @inheritDoc
+	*/
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	{
+		return capability == EnergyWayAPI.capEnergy ? (T) this : null;
+	}
+
+
 
 
 	/**
@@ -217,5 +237,15 @@ public class EnergyProvider implements INBTSerializable<NBTTagCompound>
 			if (nbt instanceof NBTTagCompound) instance.deserializeNBT((NBTTagCompound) nbt);
 		}
 	}
+
+
+
+
+
+
+
+
+
+
 
 }

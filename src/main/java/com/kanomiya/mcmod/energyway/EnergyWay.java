@@ -1,7 +1,7 @@
 package com.kanomiya.mcmod.energyway;
 
-import java.util.Map;
-
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -13,16 +13,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import org.apache.logging.log4j.Logger;
 
-import com.kanomiya.mcmod.energyway.api.EnergyProviderRegistry;
-import com.kanomiya.mcmod.energyway.api.energy.Energy;
+import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
-import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
+import com.kanomiya.mcmod.energyway.api.event.EnergyProviderCreateEvent;
 import com.kanomiya.mcmod.energyway.command.CommandEnergyWay;
 
-@Mod(modid = EnergyWay.MODID)
+@Mod(modid = EnergyWayAPI.MODID)
 public class EnergyWay
 {
-	public static final String MODID = "energyway";
+
+	@Mod.Instance(EnergyWayAPI.MODID)
+	public static final EnergyWay instance = null;
 
 	public static Logger logger;
 
@@ -32,6 +33,8 @@ public class EnergyWay
 		logger = event.getModLog();
 
 		CapabilityManager.INSTANCE.register(EnergyProvider.class, new EnergyProvider.Storage(), EnergyProvider::new);
+
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@EventHandler
@@ -41,22 +44,18 @@ public class EnergyWay
 
 	}
 
-
 	@SubscribeEvent
 	public void onAttachCapabilities(AttachCapabilitiesEvent event)
 	{
 		if (event.getObject() instanceof ICapabilityProvider)
 		{
-			Map<EnergyType, Energy> templete = EnergyProviderRegistry.getTemplete(((ICapabilityProvider) event.getObject()).getClass());
+			EnergyProvider provider = new EnergyProvider();
+			EnergyProviderCreateEvent e = new EnergyProviderCreateEvent(provider);
 
+			MinecraftForge.EVENT_BUS.post(e);
 
-			if (! templete.isEmpty())
-			{
-				// TODO event.addCapability();
-			}
-
+			event.addCapability(new ResourceLocation(EnergyWayAPI.DOMAIN_NAME), provider);
 		}
-
 
 
 	}

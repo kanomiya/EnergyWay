@@ -15,11 +15,12 @@ import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
  * @author Kanomiya
  *
  */
-public class EnergyWayAPI {
-
+public class EnergyWayAPI
+{
 	public static final BiMap<ResourceLocation, EnergyType> energyRegistry = HashBiMap.create();
 
-	public static final String ID_DATA = "energyway";
+	public static final String DOMAIN_NAME = "energyway";
+	public static final String MODID = "com.kanomiya.mcmod." + DOMAIN_NAME;
 
 	@CapabilityInject(value = EnergyProvider.class)
 	public static final Capability<EnergyProvider> capEnergy = null;
