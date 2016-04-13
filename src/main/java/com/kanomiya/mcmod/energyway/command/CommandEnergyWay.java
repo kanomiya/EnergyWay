@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
 import com.kanomiya.mcmod.energyway.api.energy.Energy;
@@ -19,61 +23,76 @@ import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
  * @author Kanomiya
  *
  */
-public class CommandEnergyWay extends CommandBase {
+public class CommandEnergyWay extends CommandBase
+{
 
-	@Override public String getCommandName() {
+	@Override
+	public String getCommandName()
+	{
 		return "energyway";
 	}
 
-	@Override public String getCommandUsage(ICommandSender sender) {
-		return "energyway.command.energyway.usage";
+	@Override
+	public String getCommandUsage(ICommandSender sender)
+	{
+		return "command.energyway.usage";
 	}
 
-	@Override public List addTabCompletionOptions(ICommandSender sender, String[] option, BlockPos pos) {
+	@Override
+	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+	{
 		List<String> list = new ArrayList<String>();
 
-		if (option.length == 1) {
-			list.add("accept");
+		if (args.length == 1)
+		{
+			list.add("give");
 		}
 
 
-		if (option.length == 2) {
-			if (option[0].equals("accept")) {
-				list.addAll(EnergyWayAPI.energyTypeMap().keySet());
+		if (args.length == 2)
+		{
+			if (args[0].equals("give"))
+			{
+				EnergyWayAPI.energyRegistry.forEach((k, v) -> list.add(k.toString()));
 			}
 		}
 
 		return list;
 	}
 
-	@Override public void processCommand(ICommandSender sender, String[] args) {
+	@Override
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		int argLength = args.length;
-		if (argLength == 0) { missCommand(sender); return; }
-
-		boolean success = false;
 
 		Entity entity = sender.getCommandSenderEntity();
-		EnergyProvider provider = entity.getCapability(EnergyWayAPI.capabilityEnergy, null);
 
-		if (provider != null) {
+		if (EnergyWayAPI.hasEnergyProvider(entity, null))
+		{
+			EnergyProvider provider = EnergyWayAPI.getEnergyProvider(entity, null);
 
-			if (argLength == 3 && args[0].equals("accept") && args[2].matches("-*[0-9]+")) {
+			if (argLength == 3 && args[0].equals("give") && args[2].matches("-*[0-9]+")) {
 				int amount = Integer.valueOf(args[2]);
-				EnergyType energyType = EnergyWayAPI.getEnergyTypeById(args[1]);
+				EnergyType energyType = EnergyWayAPI.energyRegistry.get(new ResourceLocation(args[1]));
 
 				if (energyType != null)
 				{
 					provider.accept(Energy.INFINITY, energyType, amount);
 
-					sender.addChatMessage(new ChatComponentTranslation("energyway.command.energyway.accept",
+					sender.addChatMessage(new TextComponentTranslation("command.energyway.give",
 							sender.getDisplayName(),
-							new ChatComponentText("" +amount),
-							new ChatComponentTranslation("energyway.energyType." + energyType.getId())));
-
-					success = true;
+							new TextComponentString("" +amount),
+							new TextComponentTranslation("energyway.energyType." + energyType.getUnlocalizedName())));
+				} else
+				{
+					throw new CommandException("command.energyway.noSuchEnergyType", args[1]);
 				}
 
-			}/* else if (argLength == 3 && args[0].equals("charge") && args[2].matches("-*[0-9]+") && entity != null && entity instanceof EntityLivingBase) {
+			} else
+			{
+				throw new WrongUsageException(getCommandUsage(sender));
+			}
+
+			/* else if (argLength == 3 && args[0].equals("charge") && args[2].matches("-*[0-9]+") && entity != null && entity instanceof EntityLivingBase) {
 				int amount = Integer.valueOf(args[2]);
 
 				if (args[1].equals("item")) {
@@ -98,14 +117,6 @@ public class CommandEnergyWay extends CommandBase {
 
 		}
 
-		if (! success) {
-			missCommand(sender);
-		}
 
 	}
-
-	public void missCommand(ICommandSender sender) {
-		sender.addChatMessage(new ChatComponentTranslation("energyway.command.miss"));
-	}
-
 }

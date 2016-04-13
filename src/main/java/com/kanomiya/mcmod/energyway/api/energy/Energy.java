@@ -1,6 +1,7 @@
 package com.kanomiya.mcmod.energyway.api.energy;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
@@ -10,7 +11,7 @@ import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
  *
  */
 public class Energy implements INBTSerializable<NBTTagCompound> {
-	protected static final EnergyType energyTypeVoid = new EnergyType("void").register();
+	protected static final EnergyType energyTypeVoid = new EnergyType("void");
 	protected static final Energy energyVoid = Energy.createEmpty(Energy.energyTypeVoid, 0);
 	public static final EnergyProvider VOID = new EnergyProvider(energyVoid)
 	{
@@ -21,7 +22,7 @@ public class Energy implements INBTSerializable<NBTTagCompound> {
 		}
 	};
 
-	protected static final EnergyType energyTypeInfinity = new EnergyType("infinity").register();
+	protected static final EnergyType energyTypeInfinity = new EnergyType("infinity");
 	protected static final Energy energyInfinity = Energy.createUnlimited(Energy.energyTypeInfinity, Integer.MAX_VALUE);
 	public static final EnergyProvider INFINITY = new EnergyProvider(energyInfinity)
 	{
@@ -31,6 +32,12 @@ public class Energy implements INBTSerializable<NBTTagCompound> {
 			return energyInfinity;
 		}
 	};
+
+	static
+	{
+		EnergyWayAPI.energyRegistry.put(new ResourceLocation("void"), energyTypeVoid);
+		EnergyWayAPI.energyRegistry.put(new ResourceLocation("infinity"), energyTypeInfinity);
+	}
 
 
 	/**
@@ -221,7 +228,7 @@ public class Energy implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public void deserializeNBT(NBTTagCompound compound)
 	{
-		energyType = EnergyWayAPI.getEnergyTypeById(compound.getString("id")); // TODO UNKNOWN
+		energyType = EnergyWayAPI.energyRegistry.get(new ResourceLocation(compound.getString("id"))); // TODO UNKNOWN
 		capacity = compound.getInteger("capacity");
 		amount = compound.getInteger("amount");
 	}
@@ -237,7 +244,8 @@ public class Energy implements INBTSerializable<NBTTagCompound> {
 	{
 		NBTTagCompound compound = new NBTTagCompound();
 
-		compound.setString("id", energyType.getId());
+		ResourceLocation id = EnergyWayAPI.energyRegistry.inverse().get(energyType);
+		compound.setString("id", id == null ? "null" : id.toString());
 		compound.setInteger("capacity", capacity);
 		compound.setInteger("amount", amount);
 

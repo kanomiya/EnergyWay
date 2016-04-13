@@ -1,6 +1,8 @@
 package com.kanomiya.mcmod.energyway.api.energy;
 
-import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
+import net.minecraft.util.text.translation.I18n;
+
+
 
 /**
  * @author Kanomiya
@@ -8,23 +10,21 @@ import com.kanomiya.mcmod.energyway.api.EnergyWayAPI;
  */
 public class EnergyType {
 
-	protected String id;
+	protected String unlocalizedName;
 
-	public EnergyType(String id)
+	public EnergyType(String unlocalizedName)
 	{
-		this.id = id;
+		this.unlocalizedName = unlocalizedName;
 	}
 
-	public String getId()
+	public String getUnlocalizedName()
 	{
-		return id;
+		return unlocalizedName;
 	}
 
-
-	public EnergyType register()
+	public String getDisplayName()
 	{
-		EnergyWayAPI.registerEnergyType(this);
-		return this;
+		return I18n.translateToLocal(getUnlocalizedName());
 	}
 
 }

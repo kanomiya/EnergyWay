@@ -7,6 +7,7 @@ import java.util.Map;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -20,8 +21,8 @@ import com.kanomiya.mcmod.energyway.api.event.EnergyAcceptedEvent;
  * @author Kanomiya
  *
  */
-public class EnergyProvider implements INBTSerializable<NBTTagCompound> {
-
+public class EnergyProvider implements INBTSerializable<NBTTagCompound>
+{
 	public static EnergyProvider fromNBT(NBTTagCompound nbt)
 	{
 		EnergyProvider provider = new EnergyProvider();
@@ -136,7 +137,10 @@ public class EnergyProvider implements INBTSerializable<NBTTagCompound> {
 	 * @param actualAmount 実際のエネルギー移動量
 	 * @param donor エネルギー供与者
 	 */
-	public void onEnergyAccepted(EnergyType energyType, int expectedAmount, int actualAmount, EnergyProvider donor) {  }
+	public void onEnergyAccepted(EnergyType energyType, int expectedAmount, int actualAmount, EnergyProvider donor)
+	{
+
+	}
 
 
 	@Override
@@ -148,7 +152,8 @@ public class EnergyProvider implements INBTSerializable<NBTTagCompound> {
 		while (energyItr.hasNext())
 		{
 			Energy energy = energyItr.next();
-			compound.setTag(energy.getEnergyType().getId(), energy.serializeNBT());
+			ResourceLocation id = EnergyWayAPI.energyRegistry.inverse().get(energy.getEnergyType());
+			compound.setTag(id == null ? "null" : id.toString(), energy.serializeNBT());
 		}
 
 		if (hasCustomData()) compound.setTag("customData", getCustomData());
@@ -165,7 +170,7 @@ public class EnergyProvider implements INBTSerializable<NBTTagCompound> {
 		while (idItr.hasNext())
 		{
 			String id = idItr.next();
-			EnergyType energyType = EnergyWayAPI.getEnergyTypeById(id);
+			EnergyType energyType = EnergyWayAPI.energyRegistry.get(new ResourceLocation(id));
 			if (energyType == null) continue;
 
 			NBTTagCompound eachTag = compound.getCompoundTag(id);

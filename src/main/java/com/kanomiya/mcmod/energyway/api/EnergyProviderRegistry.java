@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import net.minecraft.entity.Entity;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import scala.actors.threadpool.Arrays;
 
 import com.google.common.collect.Maps;
@@ -15,15 +15,13 @@ import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
  * @author Kanomiya
  *
  */
-public class EnergyProviderInitRegistry {
+public class EnergyProviderRegistry
+{
+	protected static Map<Class<? extends ICapabilityProvider>, Map<EnergyType, Energy>> entityPropTempletes = Maps.newHashMap();
 
-	public static final EnergyProviderInitRegistry INSTANCE = new EnergyProviderInitRegistry();
-	protected EnergyProviderInitRegistry() {  }
+	// TODO EVENT LISTENER
 
-
-	protected Map<Class<? extends Entity>, Map<EnergyType, Energy>> entityPropTempletes = Maps.newHashMap();
-
-	public void addEntityPropTemplete(Class<? extends Entity> clazz, Energy... energy)
+	public static void addTemplete(Class<? extends ICapabilityProvider> clazz, Energy... energy)
 	{
 		Iterator<Energy> itr = Arrays.asList(energy).iterator();
 
@@ -38,14 +36,14 @@ public class EnergyProviderInitRegistry {
 
 	}
 
-	public Map<EnergyType, Energy> getEntityPropTemplete(Class<? extends Entity> clazz)
+	public static Map<EnergyType, Energy> getTemplete(Class<? extends ICapabilityProvider> clazz)
 	{
 		Map<EnergyType, Energy> map = Maps.newHashMap();
 
-		entityPropTempletes.keySet().forEach(new Consumer<Class<? extends Entity>>()
+		entityPropTempletes.keySet().forEach(new Consumer<Class<? extends ICapabilityProvider>>()
 		{
 			@Override
-			public void accept(Class<? extends Entity> key) {
+			public void accept(Class<? extends ICapabilityProvider> key) {
 				if (key.isAssignableFrom(clazz))
 				{
 					entityPropTempletes.get(key).forEach((EnergyType t, Energy e) -> map.put(t, e));;

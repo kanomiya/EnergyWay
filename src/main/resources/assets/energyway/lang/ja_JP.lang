@@ -1,5 +1,5 @@
 ﻿###-- Japanese --###
 
-energyway.command.miss=コマンドの実行に失敗しました
-energyway.command.energyway.usage=EnergyWay Command
-energyway.command.energyway.accept=エネルギー %3$s %2$s を %1$s に付与しました
+command.energyway.usage=/energyway give <target> <type> <amount>
+command.energyway.give=エネルギー %3$s %2$s を %1$s に付与しました
+command.energyway.noSuchEnergyType=エネルギータイプ %1$s が見つかりません

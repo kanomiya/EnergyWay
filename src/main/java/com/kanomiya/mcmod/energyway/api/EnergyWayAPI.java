@@ -1,11 +1,13 @@
 package com.kanomiya.mcmod.energyway.api;
 
-import java.util.Map;
-
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
 
@@ -15,28 +17,25 @@ import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
  */
 public class EnergyWayAPI {
 
-	protected static final Map<String, EnergyType> idToEnergyType = Maps.newHashMap();
+	public static final BiMap<ResourceLocation, EnergyType> energyRegistry = HashBiMap.create();
 
 	public static final String ID_DATA = "energyway";
 
 	@CapabilityInject(value = EnergyProvider.class)
-	public static final Capability<EnergyProvider> capabilityEnergy = null;
+	public static final Capability<EnergyProvider> capEnergy = null;
 
-	public static void registerEnergyType(EnergyType energyType)
+
+	public static boolean hasEnergyProvider(ICapabilityProvider capProvider, EnumFacing facing)
 	{
-		idToEnergyType.put(energyType.getId(), energyType);
+		return capProvider.hasCapability(capEnergy, facing);
 	}
 
-	public static EnergyType getEnergyTypeById(String id)
+	public static EnergyProvider getEnergyProvider(ICapabilityProvider capProvider, EnumFacing facing)
 	{
-		if (! idToEnergyType.containsKey(id)) return null;
-		return idToEnergyType.get(id);
+		if (! hasEnergyProvider(capProvider, facing)) return null;
+		return capProvider.getCapability(capEnergy, facing);
 	}
 
-	public static Map<String, EnergyType> energyTypeMap()
-	{
-		return idToEnergyType;
-	}
 
 
 

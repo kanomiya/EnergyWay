@@ -2,15 +2,15 @@ package com.kanomiya.mcmod.energyway.api.event;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
-import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
 import com.kanomiya.mcmod.energyway.api.energy.EnergyProvider;
+import com.kanomiya.mcmod.energyway.api.energy.EnergyType;
 
 /**
  * @author Kanomiya
  *
  */
-public class EnergyAcceptedEvent extends Event implements IEnergyEvent {
-
+public class EnergyAcceptedEvent extends Event implements IEnergyEvent
+{
 	protected EnergyType energyType;
 	protected EnergyProvider donor, acceptor;
 	protected int expectedAmount, actualAmount;
@@ -37,21 +37,24 @@ public class EnergyAcceptedEvent extends Event implements IEnergyEvent {
 	/**
 	 * @return energyType エネルギータイプ
 	 */
-	public EnergyType getEnergyType() {
+	public EnergyType getEnergyType()
+	{
 		return energyType;
 	}
 
 	/**
 	 * @return expectedAmount 想定されたエネルギー移動量
 	 */
-	public int getExpectedAmount() {
+	public int getExpectedAmount()
+	{
 		return expectedAmount;
 	}
 
 	/**
 	 * @return actualAmount 実際のエネルギー移動量
 	 */
-	public int getActualAmount() {
+	public int getActualAmount()
+	{
 		return actualAmount;
 	}
 
@@ -59,14 +62,16 @@ public class EnergyAcceptedEvent extends Event implements IEnergyEvent {
 	/**
 	 * @return donor エネルギー供与者
 	 */
-	public EnergyProvider getDonor() {
+	public EnergyProvider getDonor()
+	{
 		return donor;
 	}
 
 	/**
 	 * @return acceptor エネルギー受容者
 	 */
-	public EnergyProvider getAcceptor() {
+	public EnergyProvider getAcceptor()
+	{
 		return acceptor;
 	}
 
